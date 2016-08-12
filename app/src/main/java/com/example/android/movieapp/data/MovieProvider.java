@@ -26,7 +26,7 @@ public class MovieProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/*", MOVIES);
+        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/popular", MOVIES);
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", DETAIL_MOVIE);
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/favorites", FAVORITES);
         return matcher;
@@ -83,7 +83,7 @@ public class MovieProvider extends ContentProvider {
                         selectionById,
                         null,
                         null,
-                        sortOrder);
+                        sortOrder);// instead of sortOrder can be null
                 break;
             }
             case FAVORITES: {
@@ -101,7 +101,7 @@ public class MovieProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        // Register the uri to watch for changes, so data in the cursor can be update automatically.
+        // Register the uri to watch for changes, so data in the cursor can be updated automatically.
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
         return retCursor;
     }
@@ -132,8 +132,9 @@ public class MovieProvider extends ContentProvider {
             default: throw new UnsupportedOperationException("Unknown uri: "+uri);
         }
         if (_id<=0)
+            // this kind of exception only for insert operations
             throw new android.database.SQLException("Failed to insert row into "+uri);
-        // If uri's insert affects another uris, notify the change
+        // If this change affects other uris, notify the change
         getContext().getContentResolver().notifyChange(uri,null);
         return returnUri;
     }
@@ -156,6 +157,7 @@ public class MovieProvider extends ContentProvider {
                 }finally {
                     db.endTransaction();
                 }
+                // If this change affects other uris, notify the change
                 getContext().getContentResolver().notifyChange(uri,null);
                 return returnCount;
             default:
@@ -174,6 +176,7 @@ public class MovieProvider extends ContentProvider {
         if(null==selection) selection="1";
 
         switch (sUriMatcher.match(uri)){
+            // for MOVIES table, deleting joined registers is handled in the delete's call
             case MOVIES:{
                 rowsDeleted=db.delete(MovieContract.MovieEntry.TABLE_NAME,selection,selectionArgs);
                 break;
@@ -186,7 +189,7 @@ public class MovieProvider extends ContentProvider {
         }
 
         if(rowsDeleted!=0){
-            // If delete affects the uri in another query, notify the change
+            /// If this change affects other uris, notify the change
             getContext().getContentResolver().notifyChange(uri,null);
         }
         return rowsDeleted;

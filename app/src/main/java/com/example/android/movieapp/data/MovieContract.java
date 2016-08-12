@@ -37,6 +37,8 @@ public class MovieContract {
         public static final String COLUMN_RELEASE_DATE="release_date";
         public static final String COLUMN_POPULARITY="popularity";
         public static final String COLUMN_MOVIE_ID="id";
+        // COLUMN_DATE doesn't come with the JSON, and it's for registration date in the DB
+        public static final String COLUMN_DATE="date";
 
         // differences:
         // - ContentUris.withAppendedId(CONTENT_URI, id) ----> appends the given id to the end of the path CONTENT_URI

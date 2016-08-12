@@ -51,14 +51,15 @@ public class MovieDbHelper
                 MovieEntry.COLUMN_VOTE_AVERAGE+" REAL NOT NULL, "+
                 MovieEntry.COLUMN_RELEASE_DATE+" TEXT NOT NULL, "+
                 MovieEntry.COLUMN_POPULARITY+" REAL NOT NULL, "+
-                MovieEntry.COLUMN_MOVIE_ID+" INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE"+
+                MovieEntry.COLUMN_MOVIE_ID+" INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE,"+
+                MovieEntry.COLUMN_DATE+" TEXT NOT NULL"+
                 " );";
 
-        // COLUMN_MOVIE_ID and COLUMN_MOVIE_KEY are the same but both table ain't linked with fk since it's easier
+        // COLUMN_MOVIE_ID and COLUMN_MOVIE_KEY are the same but both tables ain't linked with fk since it's easier
         // updating MOVIE TABLE with simple INSERT and avoids REFERENCE PROBLEMS on FAVORITE TABLE
         final String SQL_CREATE_FAVORITES_TABLE="CREATE TABLE "+ FavoritesEntry.TABLE_NAME+" ("+
                 FavoritesEntry._ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                FavoritesEntry.COLUMN_MOVIE_KEY+" INTEGER NOT NULL UNIQUE ON CONFLICT IGNORE,"+
+                FavoritesEntry.COLUMN_MOVIE_KEY+" INTEGER NOT NULL UNIQUE ON CONFLICT IGNORE, "+
                 FavoritesEntry.COLUMN_DATE+" TEXT NOT NULL"+
                 " );";
 
