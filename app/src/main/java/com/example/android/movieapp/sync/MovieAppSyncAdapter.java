@@ -148,7 +148,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                 movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, voteAverage);
                 movieValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, popularity);
                 movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movieId);
-                // new SimpleDateFormat("YYYY-MM-DD").format(new Date()) return today in string format
+                // new SimpleDateFormat("yyyy-MM-dd").format(new Date()) return today in string format
                 movieValues.put(MovieContract.MovieEntry.COLUMN_DATE, todayString);
 
                 cvVector.add(movieValues);
@@ -160,11 +160,12 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
             if(cvVector.size()>0){
                 ContentValues[] cvArray=new ContentValues[cvVector.size()];
                 cvVector.toArray(cvArray);
-                // insert operation will replace old movies with same id of the new ones
+
+                // CAUTION ---> insert operation will replace old movies with same id of new ones
                 inserted=getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.buildSortOrderMovie("popular"),cvArray);
 
                 // delete old data before today and not favorite movies, so we don't build up an endless history
-                // movie.date<? AND (NOT EXISTS (SELECT 1 FROM favorites WHERE favorites.movie_id=movie.id))      // could be left join too.
+                // movie.date<? AND (NOT EXISTS (SELECT 1 FROM favorites WHERE favorites.movie_id=movie.id))      // could be left join too, but not exists is faster
                 String selection= MovieContract.MovieEntry.TABLE_NAME+"."+ MovieContract.MovieEntry.COLUMN_DATE+"<?"+
                         " AND (NOT EXISTS (SELECT 1 FROM " +MovieContract.FavoritesEntry.TABLE_NAME +
                         " WHERE "+MovieContract.FavoritesEntry.TABLE_NAME+"."+ MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY+
@@ -182,6 +183,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public static void syncImmediately(Context context) {
         Bundle bundle = new Bundle();
+        // SYNC_EXTRAS_EXPEDITED for give it priority and SYNC_EXTRAS_MANUAL for avoiding automatic sync
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(getSyncAccount(context),
@@ -201,7 +203,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
 
         // when an account is created always should have a password
         if (null == accountManager.getPassword(newAccount)) {
-            // adding account with password ""
+            // adding account with password "", if there was an error return null
             if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
                 return null;
             }

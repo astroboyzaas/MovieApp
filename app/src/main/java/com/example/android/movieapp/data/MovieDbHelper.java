@@ -63,7 +63,6 @@ public class MovieDbHelper
                 FavoritesEntry.COLUMN_DATE+" TEXT NOT NULL"+
                 " );";
 
-
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
         db.execSQL(SQL_CREATE_FAVORITES_TABLE);
     }

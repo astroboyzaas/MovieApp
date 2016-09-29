@@ -42,7 +42,7 @@ public class MovieContract {
 
         // differences:
         // - ContentUris.withAppendedId(CONTENT_URI, id) ----> appends the given id to the end of the path CONTENT_URI
-        // - CONTENT_URI.buildUpon().appendPath(criteria).build()----> Encodes the given segment(criteria) and appends it to the path CONTENT_URI
+        // - CONTENT_URI.buildUpon().appendPath(criteria)----> Encodes the given segment(criteria) and appends it to the path CONTENT_URI
 
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -58,6 +58,7 @@ public class MovieContract {
         public static String getMovieIdFromUri(Uri uri){
             return uri.getPathSegments().get(1);
         }
+
 
     }
 

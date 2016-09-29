@@ -165,13 +165,13 @@ public class MovieProvider extends ContentProvider {
         }
     }
 
-    // NO BORRAR las que estan marcadas como FAVORITES
+    // avoid deleting linked rows
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db=mOpenHelper.getWritableDatabase();
         int rowsDeleted;
 
-        // this makes delete all rows return the number of rows deleted
+        // To remove all rows and get a count, pass "1" as the whereClause.
         // see this on: https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html#delete(java.lang.String, java.lang.String, java.lang.String[])
         if(null==selection) selection="1";
 
