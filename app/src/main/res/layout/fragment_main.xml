@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MovieFragment">
-    <GridView
-        android:id="@+id/gridview_movies"
+    <!--by now we won't put a style like style="@style/ForecastListStyle" in sunshine project -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_movies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2"
-        android:gravity="center"/>
+        />
 
 </FrameLayout>

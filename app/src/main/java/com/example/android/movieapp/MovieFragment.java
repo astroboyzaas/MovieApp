@@ -7,13 +7,15 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
 import com.example.android.movieapp.data.MovieContract;
-import com.example.android.movieapp.sync.MovieAdapter;
 import com.example.android.movieapp.sync.MovieAppSyncAdapter;
 
 /**
@@ -21,7 +23,8 @@ import com.example.android.movieapp.sync.MovieAppSyncAdapter;
  */
 public class MovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private GridView mGridView;
+//    private GridView mGridView;
+    private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdpater;
 
     private static final String[] MOVIE_COLUMNS = {
@@ -44,22 +47,22 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // crear el adapter
-        mMovieAdpater = new MovieAdapter(getActivity(), null, 0);
+        // create the adapter
+        mMovieAdpater = new MovieAdapter(getActivity());
 
-        // inflar la lista
+        // inflate  recyclerview
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        mGridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_movies);
 
-        // adjuntar el adapter a la lista
-        mGridView.setAdapter(mMovieAdpater);
+        // Set the layout manager
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+
+        mRecyclerView.setAdapter(mMovieAdpater);
 
         return rootView;
     }
 
-    // iniciar el loader
-    // crear el loader
-    // finalizar el loader
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
