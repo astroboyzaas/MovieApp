@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.example.android.movieapp.MovieFragment;
 import com.example.android.movieapp.R;
+import com.example.android.movieapp.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -20,22 +21,40 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private Cursor mCursor;
     final private Context mContext;
+    private OnItemClickListener mItemClickListener;
+
+    public MovieAdapter(Context context, OnItemClickListener itemClickListener) {
+        mContext=context;
+        mItemClickListener=itemClickListener;
+    }
+
+    /////////////////////////////////////////////CALLBACK /////////////
+    public interface OnItemClickListener{
+        void onClick(RecyclerView.ViewHolder holder, long idMovie);
+    }
+    /////////////////////////////////////////////CALLBACK /////////////
 
     /////////////////////////////////////  VIEWHOLDER CLASS
-    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder{
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener{
 
         public final ImageView mItemThumb;
         public MovieAdapterViewHolder(View view){
             super(view);
             mItemThumb=(ImageView)view.findViewById(R.id.item_thumb);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition=getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+
+            mItemClickListener.onClick(this,mCursor.getLong(MovieFragment.COL_MOVIE_ID));
         }
     }
     /////////////////////////////////////  VIEWHOLDER CLASS
 
-
-    public MovieAdapter(Context context) {
-        mContext=context;
-    }
 
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {

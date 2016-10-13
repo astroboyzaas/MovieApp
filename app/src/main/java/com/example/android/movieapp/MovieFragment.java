@@ -1,5 +1,6 @@
 package com.example.android.movieapp;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -47,15 +48,27 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // create the adapter
-        mMovieAdpater = new MovieAdapter(getActivity());
+
 
         // inflate  recyclerview
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_movies);
+        // tells the adapter that item sizes will not change
+        mRecyclerView.setHasFixedSize(true);
+
 
         // Set the layout manager
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+
+        // create and set the adapter
+        mMovieAdpater = new MovieAdapter(getActivity(), new MovieAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(RecyclerView.ViewHolder holder, long idMovie) {
+                Intent intent =new Intent(getActivity(),DetailActivity.class)
+                        .setData(MovieContract.MovieEntry.buildMovieUri(idMovie));
+                startActivity(intent);
+            }
+        });
 
         mRecyclerView.setAdapter(mMovieAdpater);
 
@@ -96,4 +109,5 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onLoaderReset(Loader<Cursor> loader) {
         mMovieAdpater.swapCursor(null);
     }
+
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    app:columnCount="2">
+
+    <TextView
+        android:id="@+id/detail_title_textview"
+        app:layout_columnSpan="2"
+        app:layout_rowWeight="1"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Display3"
+        android:textColor="@color/black"
+        tools:text="Chappie"/>
+
+    <ImageView android:id="@+id/detail_thumbnail_imageview"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="2"/>
+    <LinearLayout android:orientation="vertical"
+        app:layout_columnWeight="1">
+        <TextView
+            android:id="@+id/detail_release_date_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="23/10/2016" />
+        <TextView
+            android:id="@+id/detail_vote_average_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="4.5/10"/>
+        <TextView
+            android:id="@+id/detail_popularity_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="70%"/>
+    </LinearLayout>
+    <TextView android:id="@+id/detail_overview_textview"
+        app:layout_columnSpan="2"
+        app:layout_rowWeight="1"/>
+
+</android.support.v7.widget.GridLayout>

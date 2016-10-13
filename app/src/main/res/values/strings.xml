@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MovieApp</string><!-- can be customizable -->
+    <string name="title_activity_detail">Details</string>
+
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.android.movieapp" ><!-- package can be customizable -->
+    package="com.example.android.movieapp"><!-- package can be customizable -->
 
     <!-- This permission is necessary in order to perform network access. -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Permissions required by the sync adapter -->
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
@@ -14,10 +14,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,17 +25,26 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
         <provider
-            android:authorities="@string/content_authority"
             android:name=".data.MovieProvider"
+            android:authorities="@string/content_authority"
             android:exported="false"
-            android:syncable="true" /><!-- android:name can be customizable -->
+            android:syncable="true" />
+        <!-- android:name can be customizable -->
 
 
-        <service
-            android:name="com.example.android.movieapp.sync.MovieAppAuthenticatorService"><!-- android:name can be customizable -->
+        <service android:name="com.example.android.movieapp.sync.MovieAppAuthenticatorService"><!-- android:name can be customizable -->
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
@@ -44,12 +53,12 @@
 
         <service
             android:name="com.example.android.movieapp.sync.MovieAppSyncService"
-            android:exported="true"
-            ><!-- android:name can be customizable -->
+            android:exported="true"><!-- android:name can be customizable -->
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter"
+            <meta-data
+                android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
 
