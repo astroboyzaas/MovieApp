@@ -26,7 +26,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
 //    private GridView mGridView;
     private RecyclerView mRecyclerView;
-    private MovieAdapter mMovieAdpater;
+    private MovieAdapter mMovieAdapter;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
@@ -61,7 +61,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         // create and set the adapter
-        mMovieAdpater = new MovieAdapter(getActivity(), new MovieAdapter.OnItemClickListener() {
+        mMovieAdapter = new MovieAdapter(getActivity(), new MovieAdapter.OnItemClickListener() {
             @Override
             public void onClick(RecyclerView.ViewHolder holder, long idMovie) {
                 Intent intent =new Intent(getActivity(),DetailActivity.class)
@@ -69,8 +69,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
                 startActivity(intent);
             }
         });
-
-        mRecyclerView.setAdapter(mMovieAdpater);
+        mRecyclerView.setAdapter(mMovieAdapter);
 
         return rootView;
     }
@@ -102,12 +101,12 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mMovieAdpater.swapCursor(data);
+        mMovieAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mMovieAdpater.swapCursor(null);
+        mMovieAdapter.swapCursor(null);
     }
 
 }
