@@ -23,15 +23,16 @@ public class DetailActivity extends AppCompatActivity {
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+        if (savedInstanceState == null) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
 
-        DetailFragment fragment =new DetailFragment();
-        fragment.setArguments(arguments);
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.movie_detail_container,fragment)
-                .commit();
-
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.movie_detail_container, fragment)
+                    .commit();
+        }
     }
 }
