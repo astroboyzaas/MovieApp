@@ -7,14 +7,17 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.example.android.movieapp.BuildConfig;
 import com.example.android.movieapp.R;
+import com.example.android.movieapp.Utility;
 import com.example.android.movieapp.data.MovieContract;
 
 import org.json.JSONArray;
@@ -53,7 +56,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             final String MOVIES_BASE_URL =
                     "http://api.themoviedb.org/3/movie";
-            final String option = "popular";
+            final String option = Utility.getMoviesOrder(getContext());
             final String API_KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
@@ -161,8 +164,10 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                 ContentValues[] cvArray=new ContentValues[cvVector.size()];
                 cvVector.toArray(cvArray);
 
+                String orderSelected=Utility.getMoviesOrder(getContext());
+
                 // CAUTION ---> insert operation will replace old movies with same id of new ones
-                inserted=getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.buildSortOrderMovie("popular"),cvArray);
+                inserted=getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.buildSortOrderMovie(orderSelected),cvArray);
 
                 // delete old data before today and not favorite movies, so we don't build up an endless history
                 // movie.date<? AND (NOT EXISTS (SELECT 1 FROM favorites WHERE favorites.movie_id=movie.id))      // could be left join too, but not exists is faster
@@ -171,7 +176,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                         " WHERE "+MovieContract.FavoritesEntry.TABLE_NAME+"."+ MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY+
                         "="+MovieContract.MovieEntry.TABLE_NAME+"."+ MovieContract.MovieEntry.COLUMN_MOVIE_ID+"))";
 
-                getContext().getContentResolver().delete(MovieContract.MovieEntry.buildSortOrderMovie("popular"), selection, new String[]{todayString});
+                getContext().getContentResolver().delete(MovieContract.MovieEntry.buildSortOrderMovie(orderSelected), selection, new String[]{todayString});
             }
             Log.d(LOG_TAG, "Sync Complete. " + inserted + " Inserted");
         } catch (JSONException e) {

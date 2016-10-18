@@ -26,9 +26,13 @@ public class MovieProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/popular", MOVIES);
+        // trying from the most specific to general
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", DETAIL_MOVIE);
-        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/favorites", FAVORITES);
+        matcher.addURI(authority, MovieContract.PATH_MOVIE +"/"+MovieContract.PATH_FAVORITES, FAVORITES);
+
+        /////////// SE PUEDE PRESCINDIR DEL /*  Y QUE SOLO SEA PATH_MOVIE, PORQUE AL FINAL SOLO CUENTA EL SORT ORDER
+        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/*", MOVIES);
+
         return matcher;
     }
 
@@ -70,7 +74,7 @@ public class MovieProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        sortOrder);
+                        sortOrder+" LIMIT 20");
                 break;
             }
             case DETAIL_MOVIE: {

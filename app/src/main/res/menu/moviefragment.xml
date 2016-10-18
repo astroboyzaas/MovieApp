@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_map"
-        android:title="@string/sort_order"
-        />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/popular_order"
+        android:title="@string/popular_order"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/top_order"
+        android:title="@string/top_order"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/favorites_order"
+        android:title="@string/favorites_order"
+        app:showAsAction="never" />
+
 </menu>

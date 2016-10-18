@@ -1,8 +1,11 @@
 package com.example.android.movieapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -12,6 +15,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -27,6 +33,13 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 //    private GridView mGridView;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Add this line in order for this fragment to handle menu events.
+        setHasOptionsMenu(true);
+    }
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
@@ -88,9 +101,52 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.moviefragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id=item.getItemId();
+        String orderValue=getString(R.string.pref_order_default);
+        switch (id){
+            case R.id.popular_order:
+                orderValue=getString(R.string.popular_order);
+                break;
+            case R.id.top_order:
+                orderValue=getString(R.string.top_order);
+                break;
+            case R.id.favorites_order:
+                orderValue=getString(R.string.favorites_order);
+                break;
+        }
+        Utility.setMoviesOrder(getActivity(),orderValue);
+        MovieAppSyncAdapter.syncImmediately(getActivity());
+        getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+        return true;
+    }
+
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
-        Uri moviesUri = MovieContract.MovieEntry.buildSortOrderMovie("popular");
+        String orderSelected=Utility.getMoviesOrder(getContext());
+
+        Uri moviesUri;
+        String sortOrder;
+
+        if(orderSelected.equals(getString(R.string.favorites_order))){
+            sortOrder= MovieContract.FavoritesEntry.COLUMN_DATE + " ASC";
+            moviesUri = MovieContract.FavoritesEntry.CONTENT_URI;
+        }else{
+            if(orderSelected.equals(getString(R.string.popular_order))){
+                sortOrder = MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
+            }else{
+                sortOrder = MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
+            }
+            moviesUri = MovieContract.MovieEntry.buildSortOrderMovie(orderSelected);
+        }
+        /////////////////////////////////// VERIFICAR CON EL JSON DEL API SI SON LOS RESULTADOS CORRECTOS
         return new CursorLoader(getActivity(),
                 moviesUri,
                 MOVIE_COLUMNS,
