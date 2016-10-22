@@ -22,4 +22,9 @@ public class Utility {
                 context.getString(R.string.pref_order_default));
         return orderSelected;
     }
+
+    public static String getFriendlyYearString(String dateString){
+        // returns only year
+        return dateString.substring(0,4);
+    }
 }

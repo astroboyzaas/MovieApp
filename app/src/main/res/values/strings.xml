@@ -17,4 +17,7 @@
 
     <string name="pref_order_selected">order_selected</string>
     <string name="pref_order_default">popular</string>
+
+    <string name="dummy_year">2015</string>
+    <string name="dummy_rating">8.33</string>
 </resources>

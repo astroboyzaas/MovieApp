@@ -8,6 +8,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
+
+import com.example.android.movieapp.sync.MovieAppSyncAdapter;
 
 /**
  * Created by Manuel on 07/06/2016.
@@ -17,6 +20,7 @@ public class MovieProvider extends ContentProvider {
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MovieDbHelper mOpenHelper;
+    String LOG_TAG = MovieProvider.class.getSimpleName();
 
     static final int MOVIES = 100; // it can be popular or top rated depending sort order
     static final int DETAIL_MOVIE = 101;
@@ -51,6 +55,22 @@ public class MovieProvider extends ContentProvider {
         );
     }
 
+    private static final SQLiteQueryBuilder sMoviesQueryBuilder;
+
+    static {
+        sMoviesQueryBuilder = new SQLiteQueryBuilder();
+        // movie LEFT JOIN favorites ON movie.id=favorites.movie_id
+        sMoviesQueryBuilder.setTables(
+                MovieContract.MovieEntry.TABLE_NAME  + " LEFT JOIN " +
+                        MovieContract.FavoritesEntry.TABLE_NAME +
+                        " ON " + MovieContract.MovieEntry.TABLE_NAME +
+                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID +
+                        "=" +  MovieContract.FavoritesEntry.TABLE_NAME +
+                        "." + MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY
+        );
+    }
+
+
     // movie.id=?
     private static final String sIdSelection = MovieContract.MovieEntry.TABLE_NAME + "." +
             MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ";
@@ -66,15 +86,25 @@ public class MovieProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             case MOVIES: {
-                // 1 table
-                retCursor = mOpenHelper.getReadableDatabase().query(
-                        MovieContract.MovieEntry.TABLE_NAME,
+//                // 1 table
+//                retCursor = mOpenHelper.getReadableDatabase().query(
+//                        MovieContract.MovieEntry.TABLE_NAME,
+//                        projection,
+//                        selection,
+//                        selectionArgs,
+//                        null,
+//                        null,
+//                        sortOrder+" LIMIT 20");
+                // 2 joined tables
+                retCursor=sMoviesQueryBuilder.query(
+                        mOpenHelper.getReadableDatabase(),
                         projection,
                         selection,
                         selectionArgs,
                         null,
                         null,
-                        sortOrder+" LIMIT 20");
+                        sortOrder+ " LIMIT 20");
+                Log.d(LOG_TAG,"Nro de Registros: " + retCursor.getCount());
                 break;
             }
             case DETAIL_MOVIE: {
@@ -100,6 +130,7 @@ public class MovieProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                Log.d(LOG_TAG,"Nro de Registros: " + retCursor.getCount());
                 break;
             }
             default:

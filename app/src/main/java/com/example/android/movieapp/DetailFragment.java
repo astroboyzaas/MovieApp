@@ -103,10 +103,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mReleaseDate.setText(data.getString(COL_RELEASE_DATE));
 
             double voteAverage=data.getDouble(COL_VOTE_AVERAGE);
-            mVoteAverage.setText(String.format("%f",voteAverage));
+            mVoteAverage.setText(String.format("%2f",voteAverage));
 
             double popularity=data.getDouble(COL_POPULARITY);
-            mPopularity.setText(String.format("%f",popularity));
+            mPopularity.setText(String.format("%2f",popularity));
 
             mOverview.setText(data.getString(COL_OVERVIEW));
 

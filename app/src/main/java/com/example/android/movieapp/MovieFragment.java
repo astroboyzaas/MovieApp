@@ -30,7 +30,7 @@ import com.example.android.movieapp.sync.MovieAppSyncAdapter;
  */
 public class MovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-//    private GridView mGridView;
+    //    private GridView mGridView;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
 
@@ -43,14 +43,22 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
-            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-            MovieContract.MovieEntry.COLUMN_POSTER_PATH
+            MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_POSTER_PATH,
+            MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
+            MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_POPULARITY,
+            MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
+            MovieContract.FavoritesEntry.TABLE_NAME + "." + MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY
             //DEPENDE DEL URI
     };
 
     public static final int COL_ID = 0;
     public static final int COL_MOVIE_ID = 1;
     public static final int COL_POSTER_PATH = 2;
+    public static final int COL_RELEASE_DATE = 3;
+    public static final int COL_POPULARITY = 4;
+    public static final int COL_VOTE_AVERAGE = 5;
+    public static final int COL_MOVIE_KEY = 6;
 
     private static final int MOVIES_LOADER = 0;
 
@@ -77,7 +85,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         mMovieAdapter = new MovieAdapter(getActivity(), new MovieAdapter.OnItemClickListener() {
             @Override
             public void onClick(RecyclerView.ViewHolder holder, long idMovie) {
-                Intent intent =new Intent(getActivity(),DetailActivity.class)
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
                         .setData(MovieContract.MovieEntry.buildMovieUri(idMovie));
                 startActivity(intent);
             }
@@ -108,21 +116,22 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        int id=item.getItemId();
-        String orderValue=getString(R.string.pref_order_default);
-        switch (id){
+        int id = item.getItemId();
+        String orderValue = getString(R.string.pref_order_default);
+        switch (id) {
             case R.id.popular_order:
-                orderValue=getString(R.string.popular_order);
+                orderValue = getString(R.string.popular_order);
                 break;
             case R.id.top_order:
-                orderValue=getString(R.string.top_order);
+                orderValue = getString(R.string.top_order);
                 break;
             case R.id.favorites_order:
-                orderValue=getString(R.string.favorites_order);
+                orderValue = getString(R.string.favorites_order);
                 break;
         }
-        Utility.setMoviesOrder(getActivity(),orderValue);
-        MovieAppSyncAdapter.syncImmediately(getActivity());
+        Utility.setMoviesOrder(getActivity(), orderValue);
+        if (id != R.id.favorites_order)
+            MovieAppSyncAdapter.syncImmediately(getActivity());
         getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
         return true;
     }
@@ -130,23 +139,22 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String orderSelected=Utility.getMoviesOrder(getContext());
+        String orderSelected = Utility.getMoviesOrder(getContext());
 
         Uri moviesUri;
         String sortOrder;
 
-        if(orderSelected.equals(getString(R.string.favorites_order))){
-            sortOrder= MovieContract.FavoritesEntry.COLUMN_DATE + " ASC";
+        if (orderSelected.equals(getString(R.string.favorites_order))) {
+            sortOrder = MovieContract.FavoritesEntry.TABLE_NAME + "." + MovieContract.FavoritesEntry.COLUMN_DATE + " ASC";
             moviesUri = MovieContract.FavoritesEntry.CONTENT_URI;
-        }else{
-            if(orderSelected.equals(getString(R.string.popular_order))){
-                sortOrder = MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
-            }else{
-                sortOrder = MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
+        } else {
+            if (orderSelected.equals(getString(R.string.popular_order))) {
+                sortOrder = MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
+            } else {
+                sortOrder = MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
             }
             moviesUri = MovieContract.MovieEntry.buildSortOrderMovie(orderSelected);
         }
-        /////////////////////////////////// VERIFICAR CON EL JSON DEL API SI SON LOS RESULTADOS CORRECTOS
         return new CursorLoader(getActivity(),
                 moviesUri,
                 MOVIE_COLUMNS,

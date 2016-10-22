@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.movieapp.BuildConfig;
 import com.example.android.movieapp.R;
@@ -193,6 +194,17 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(getSyncAccount(context),
                 context.getString(R.string.content_authority), bundle);
+    }
+
+    public static void insertFavorite(Context context, ContentValues cv){
+        int inserted=0;
+        context.getContentResolver().insert(MovieContract.FavoritesEntry.CONTENT_URI,cv);
+    }
+
+    public static void deleteFavorite(Context context, String movieKey){
+        int deleted=0;
+        String selection= MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY+"=?";
+        deleted = context.getContentResolver().delete(MovieContract.FavoritesEntry.CONTENT_URI,selection,new String[]{movieKey});
     }
 
     public static Account getSyncAccount(Context context) {
