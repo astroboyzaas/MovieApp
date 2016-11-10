@@ -28,7 +28,7 @@ import com.example.android.movieapp.sync.MovieAppSyncAdapter;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,MovieAdapter.callback {
 
     //    private GridView mGridView;
     private RecyclerView mRecyclerView;
@@ -82,7 +82,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         // create and set the adapter
-        mMovieAdapter = new MovieAdapter(getActivity(), new MovieAdapter.OnItemClickListener() {
+        mMovieAdapter = new MovieAdapter(getActivity(), this, new MovieAdapter.OnItemClickListener() {
             @Override
             public void onClick(RecyclerView.ViewHolder holder, long idMovie) {
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
@@ -112,6 +112,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.moviefragment, menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -154,6 +155,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
                 sortOrder = MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
             }
             moviesUri = MovieContract.MovieEntry.buildSortOrderMovie(orderSelected);
+            sortOrder+=" LIMIT 20";
         }
         return new CursorLoader(getActivity(),
                 moviesUri,
@@ -173,4 +175,11 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         mMovieAdapter.swapCursor(null);
     }
 
+    /**
+     * own method calling from MovieAdapter for restarting the loader
+     */
+    @Override
+    public void rebootLoader() {
+        getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+    }
 }

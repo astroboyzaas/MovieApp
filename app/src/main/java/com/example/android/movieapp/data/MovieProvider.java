@@ -70,6 +70,19 @@ public class MovieProvider extends ContentProvider {
         );
     }
 
+//    static {
+//        sMoviesQueryBuilder = new SQLiteQueryBuilder();
+//        // favorites RIGHT JOIN movie ON favorites.movie_id=movie.id
+//        // favorites INNER JOIN movie ON favorites.movie_id=movie.id
+//        sMoviesQueryBuilder.setTables(
+//                MovieContract.FavoritesEntry.TABLE_NAME + " RIGHT JOIN " +
+//                        MovieContract.MovieEntry.TABLE_NAME +
+//                        " ON " + MovieContract.FavoritesEntry.TABLE_NAME +
+//                        "." + MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY +
+//                        "=" + MovieContract.MovieEntry.TABLE_NAME +
+//                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID
+//        );
+//    }
 
     // movie.id=?
     private static final String sIdSelection = MovieContract.MovieEntry.TABLE_NAME + "." +
@@ -103,7 +116,7 @@ public class MovieProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        sortOrder+ " LIMIT 20");
+                        sortOrder);
                 Log.d(LOG_TAG,"Nro de Registros: " + retCursor.getCount());
                 break;
             }

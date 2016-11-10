@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,18 +28,26 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private Cursor mCursor;
     final private Context mContext;
     private OnItemClickListener mItemClickListener;
+    private MovieFragment mMovieFragment;
     String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    public MovieAdapter(Context context, OnItemClickListener itemClickListener) {
+    public MovieAdapter(Context context, MovieFragment movieFragment, OnItemClickListener itemClickListener) {
         mContext = context;
         mItemClickListener = itemClickListener;
+        mMovieFragment=movieFragment;
     }
 
-    /////////////////////////////////////////////CALLBACK /////////////
+    /////////////////////////////////////////////CALLBACK FOR RESTART LOADER /////////////
+    public interface  callback{
+        void rebootLoader();
+    }
+    /////////////////////////////////////////////CALLBACK FOR RESTART LOADER /////////////
+
+    /////////////////////////////////////////////CALLBACK OnItemClickListener /////////////
     public interface OnItemClickListener {
         void onClick(RecyclerView.ViewHolder holder, long idMovie);
     }
-    /////////////////////////////////////////////CALLBACK /////////////
+    /////////////////////////////////////////////CALLBACK OnItemClickListener/////////////
 
     /////////////////////////////////////  VIEWHOLDER CLASS
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder
@@ -67,6 +76,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 public void onClick(View v) {
                     int adapterPosition = getAdapterPosition();
                     mCursor.moveToPosition(adapterPosition);
+
+                    // It's changing mImageButtonView because it doesn't work completely correct when cursor is reloaded
                     if (mCursor.isNull(MovieFragment.COL_MOVIE_KEY)) {
                         mImageButtonView.setBackgroundResource(R.mipmap.ic_star);
                         ContentValues favoriteValues = new ContentValues();
@@ -75,7 +86,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                         favoriteValues.put(MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY, movie_id);
                         favoriteValues.put(MovieContract.FavoritesEntry.COLUMN_DATE, todayString);
                         MovieAppSyncAdapter.insertFavorite(mContext, favoriteValues);
+                        // Needed since it doesn't refresh on insert, only do that on delete
+                        mMovieFragment.rebootLoader();
                         Toast.makeText(mContext, "Agregado a Favoritos", Toast.LENGTH_SHORT).show();
+
                     } else {
                         String orderSelected = Utility.getMoviesOrder(mContext);
                         if(!orderSelected.equals(mContext.getString(R.string.favorites_order))){
