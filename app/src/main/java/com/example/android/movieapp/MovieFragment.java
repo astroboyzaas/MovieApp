@@ -33,6 +33,17 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     //    private GridView mGridView;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
+    public static final String ARG_TAB_NAME="tab_name";
+
+
+    public static MovieFragment newInstance(String tabName){
+        MovieFragment fragment = new MovieFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_TAB_NAME, tabName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,7 +110,10 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MovieAppSyncAdapter.syncImmediately(getActivity());
+        String tabName=getArguments().getString(ARG_TAB_NAME);
+        mMovieAdapter.setSectionName(tabName);
+        if(!tabName.equals(getString(R.string.favorites_order)))
+            MovieAppSyncAdapter.syncImmediately(getActivity(),tabName);
     }
 
     @Override
@@ -114,28 +128,28 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-        String orderValue = getString(R.string.pref_order_default);
-        switch (id) {
-            case R.id.popular_order:
-                orderValue = getString(R.string.popular_order);
-                break;
-            case R.id.top_order:
-                orderValue = getString(R.string.top_order);
-                break;
-            case R.id.favorites_order:
-                orderValue = getString(R.string.favorites_order);
-                break;
-        }
-        Utility.setMoviesOrder(getActivity(), orderValue);
-        if (id != R.id.favorites_order)
-            MovieAppSyncAdapter.syncImmediately(getActivity());
-        getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
-        return true;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        int id = item.getItemId();
+//        String orderValue = getString(R.string.pref_order_default);
+//        switch (id) {
+//            case R.id.popular_order:
+//                orderValue = getString(R.string.popular_order);
+//                break;
+//            case R.id.top_order:
+//                orderValue = getString(R.string.top_order);
+//                break;
+//            case R.id.favorites_order:
+//                orderValue = getString(R.string.favorites_order);
+//                break;
+//        }
+//        Utility.setMoviesOrder(getActivity(), orderValue);
+//        if (id != R.id.favorites_order)
+//            MovieAppSyncAdapter.syncImmediately(getActivity());
+//        getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+//        return true;
+//    }
 
 
     @Override
@@ -144,12 +158,13 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
         Uri moviesUri;
         String sortOrder;
+        String tabName=getArguments().getString(ARG_TAB_NAME);
 
-        if (orderSelected.equals(getString(R.string.favorites_order))) {
+        if (tabName.equals(getString(R.string.favorites_order))) {
             sortOrder = MovieContract.FavoritesEntry.TABLE_NAME + "." + MovieContract.FavoritesEntry.COLUMN_DATE + " ASC";
             moviesUri = MovieContract.FavoritesEntry.CONTENT_URI;
         } else {
-            if (orderSelected.equals(getString(R.string.popular_order))) {
+            if (tabName.equals(getString(R.string.popular_order))) {
                 sortOrder = MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
             } else {
                 sortOrder = MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";

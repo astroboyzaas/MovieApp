@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.movieapp.BuildConfig;
+import com.example.android.movieapp.MovieFragment;
 import com.example.android.movieapp.R;
 import com.example.android.movieapp.Utility;
 import com.example.android.movieapp.data.MovieContract;
@@ -57,7 +58,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             final String MOVIES_BASE_URL =
                     "http://api.themoviedb.org/3/movie";
-            final String option = Utility.getMoviesOrder(getContext());
+            final String option = extras.getString(MovieFragment.ARG_TAB_NAME);
             final String API_KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
@@ -83,7 +84,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             moviesJsonStr = buffer.toString();
             Log.v(LOG_TAG, moviesJsonStr);
-            getMoviesDataFromJson(moviesJsonStr);
+            getMoviesDataFromJson(moviesJsonStr, option);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error", e);
         } catch (JSONException e) {
@@ -103,7 +104,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void getMoviesDataFromJson(String moviesJsonStr) throws JSONException {
+    private void getMoviesDataFromJson(String moviesJsonStr, String option) throws JSONException {
 
         final String TMDB_LIST = "results";
         final String TMDB_ORIGINAL_TITLE = "original_title";
@@ -165,10 +166,10 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                 ContentValues[] cvArray=new ContentValues[cvVector.size()];
                 cvVector.toArray(cvArray);
 
-                String orderSelected=Utility.getMoviesOrder(getContext());
+                //String orderSelected=Utility.getMoviesOrder(getContext());
 
                 // CAUTION ---> insert operation will replace old movies with same id of new ones
-                inserted=getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.buildSortOrderMovie(orderSelected),cvArray);
+                inserted=getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.buildSortOrderMovie(option),cvArray);
 
                 // delete old data before today and not favorite movies, so we don't build up an endless history
                 // movie.date<? AND (NOT EXISTS (SELECT 1 FROM favorites WHERE favorites.movie_id=movie.id))      // could be left join too, but not exists is faster
@@ -177,7 +178,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                         " WHERE "+MovieContract.FavoritesEntry.TABLE_NAME+"."+ MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY+
                         "="+MovieContract.MovieEntry.TABLE_NAME+"."+ MovieContract.MovieEntry.COLUMN_MOVIE_ID+"))";
 
-                getContext().getContentResolver().delete(MovieContract.MovieEntry.buildSortOrderMovie(orderSelected), selection, new String[]{todayString});
+                getContext().getContentResolver().delete(MovieContract.MovieEntry.buildSortOrderMovie(option), selection, new String[]{todayString});
             }
             Log.d(LOG_TAG, "Sync Complete. " + inserted + " Inserted");
         } catch (JSONException e) {
@@ -187,11 +188,12 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
-    public static void syncImmediately(Context context) {
+    public static void syncImmediately(Context context, String tabName) {
         Bundle bundle = new Bundle();
         // SYNC_EXTRAS_EXPEDITED for give it priority and SYNC_EXTRAS_MANUAL for avoiding automatic sync
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        bundle.putString(MovieFragment.ARG_TAB_NAME,tabName);
         ContentResolver.requestSync(getSyncAccount(context),
                 context.getString(R.string.content_authority), bundle);
     }

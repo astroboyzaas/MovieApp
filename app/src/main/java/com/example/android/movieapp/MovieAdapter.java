@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     final private Context mContext;
     private OnItemClickListener mItemClickListener;
     private MovieFragment mMovieFragment;
+    private String mTabName;
     String LOG_TAG = MovieAdapter.class.getSimpleName();
 
     public MovieAdapter(Context context, MovieFragment movieFragment, OnItemClickListener itemClickListener) {
@@ -91,8 +91,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                         Toast.makeText(mContext, "Agregado a Favoritos", Toast.LENGTH_SHORT).show();
 
                     } else {
-                        String orderSelected = Utility.getMoviesOrder(mContext);
-                        if(!orderSelected.equals(mContext.getString(R.string.favorites_order))){
+                        //String orderSelected = Utility.getMoviesOrder(mContext);
+                        if(!mTabName.equals(mContext.getString(R.string.favorites_order))){
                             mImageButtonView.setBackgroundResource(R.mipmap.ic_add_star);
                         }
                         String movie_id = String.valueOf(mCursor.getInt(MovieFragment.COL_MOVIE_ID));
@@ -114,6 +114,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
     /////////////////////////////////////  VIEWHOLDER CLASS
 
+
+    public void setSectionName(String tabName){
+        mTabName =tabName;
+    }
 
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -139,9 +143,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         movieAdapterViewHolder.mYearTextView.setText(releaseYear);
         movieAdapterViewHolder.mYearImageView.setImageResource(R.mipmap.ic_calendar);
 
-        String orderSelected = Utility.getMoviesOrder(mContext);
+        //String orderSelected = Utility.getMoviesOrder(mContext);
 
-        if (orderSelected.equals(mContext.getString(R.string.popular_order))) { 
+        if (mTabName.equals(mContext.getString(R.string.popular_order))) {
             double popularity = mCursor.getDouble(MovieFragment.COL_POPULARITY);
             String popularityStr = String.format("%.2f", popularity);
             movieAdapterViewHolder.mCategoryTextView.setText(popularityStr);
@@ -155,7 +159,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             movieAdapterViewHolder.mCategoryImageView.setImageResource(R.mipmap.ic_heart);
         }
 
-        if(orderSelected.equals(mContext.getString(R.string.favorites_order))){
+        if(mTabName.equals(mContext.getString(R.string.favorites_order))){
             movieAdapterViewHolder.mImageButtonView.setBackgroundResource(R.mipmap.ic_delete);
         }else
         if (mCursor.isNull(MovieFragment.COL_MOVIE_KEY)) {
@@ -163,10 +167,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         } else {
             movieAdapterViewHolder.mImageButtonView.setBackgroundResource(R.mipmap.ic_star);
         }
-
-
-
-
     }
 
     // we need to make our own swapCursor method since RecyclerView.Adapter is general
