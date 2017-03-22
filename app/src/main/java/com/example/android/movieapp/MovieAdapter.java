@@ -45,7 +45,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     /////////////////////////////////////////////CALLBACK OnItemClickListener /////////////
     public interface OnItemClickListener {
-        void onClick(RecyclerView.ViewHolder holder, long idMovie);
+//        void onClick(RecyclerView.ViewHolder holder, long idMovie);
+        void onClick(long idMovie);
     }
     /////////////////////////////////////////////CALLBACK OnItemClickListener/////////////
 
@@ -108,8 +109,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-
-            mItemClickListener.onClick(this, mCursor.getLong(MovieFragment.COL_MOVIE_ID));
+//            mItemClickListener.onClick(this, mCursor.getLong(MovieFragment.COL_MOVIE_ID));
+            mItemClickListener.onClick(mCursor.getLong(MovieFragment.COL_MOVIE_ID));
         }
     }
     /////////////////////////////////////  VIEWHOLDER CLASS
@@ -119,6 +120,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         mTabName =tabName;
     }
 
+    // Note: only it's executed onCreateViewHolder and onBindViewHolder only if there were items to show,
+    // it means that getItemCount()>0
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         if (viewGroup instanceof RecyclerView) {
@@ -130,6 +133,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
+    // Note: only it's executed onCreateViewHolder and onBindViewHolder only if there were items to show,
+    // it means that getItemCount()>0
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);

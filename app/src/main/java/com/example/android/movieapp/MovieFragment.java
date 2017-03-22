@@ -81,7 +81,6 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         // inflate  recyclerview
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_movies);
@@ -95,7 +94,8 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         // create and set the adapter
         mMovieAdapter = new MovieAdapter(getActivity(), this, new MovieAdapter.OnItemClickListener() {
             @Override
-            public void onClick(RecyclerView.ViewHolder holder, long idMovie) {
+            public void onClick(long idMovie) {
+//            public void onClick(RecyclerView.ViewHolder holder, long idMovie) {
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
                         .setData(MovieContract.MovieEntry.buildMovieUri(idMovie));
                 startActivity(intent);
@@ -112,6 +112,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         super.onViewCreated(view, savedInstanceState);
         String tabName=getArguments().getString(ARG_TAB_NAME);
         mMovieAdapter.setSectionName(tabName);
+        // favorites get stored locally
         if(!tabName.equals(getString(R.string.favorites_order)))
             MovieAppSyncAdapter.syncImmediately(getActivity(),tabName);
     }
@@ -169,7 +170,8 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
             } else {
                 sortOrder = MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
             }
-            moviesUri = MovieContract.MovieEntry.buildSortOrderMovie(orderSelected);
+            // moviesUri = MovieContract.MovieEntry.buildSortOrderMovie(orderSelected);
+            moviesUri = MovieContract.MovieEntry.buildSortOrderMovie(tabName);
             sortOrder+=" LIMIT 20";
         }
         return new CursorLoader(getActivity(),

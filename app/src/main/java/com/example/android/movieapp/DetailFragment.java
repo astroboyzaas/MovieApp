@@ -57,7 +57,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (arguments != null) {
             mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
         }
-
+        //// TODO: 09/03/2017 ADD BACKDROP PATH FOR TRAILER IMAGE
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         mTitleView = (TextView) rootView.findViewById(R.id.detail_title_textview);
         mThumbnail = (ImageView) rootView.findViewById(R.id.detail_thumbnail_imageview);

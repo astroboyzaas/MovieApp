@@ -38,6 +38,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
+import static android.media.CamcorderProfile.get;
+import static android.os.Build.VERSION_CODES.BASE;
+
 /**
  * Created by Manuel on 08/06/2016.
  */
@@ -51,20 +54,39 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        final String option = extras.getString(MovieFragment.ARG_TAB_NAME);
+        getData(option, -1);
+    }
+
+    private void getData(String option, int movieId){
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
-        String moviesJsonStr;
+        String jsonStr;
 
+        // http://api.themoviedb.org/3/movie/top_rated?api_key=1b3d52c94b0b86238bb624987007b0de
+        // https://api.themoviedb.org/3/movie/244786/reviews?api_key=1b3d52c94b0b86238bb624987007b0de
         try {
             final String MOVIES_BASE_URL =
                     "http://api.themoviedb.org/3/movie";
-            final String option = extras.getString(MovieFragment.ARG_TAB_NAME);
-            final String API_KEY_PARAM = "api_key";
 
-            Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
-                    .appendPath(option)
-                    .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
-                    .build();
+            final String API_KEY_PARAM = "api_key";
+            final String LANGUAGE_PARAM = "language";
+            final String LANGUAGE_VALUE = "es";
+
+            Uri builtUri;
+
+            if (movieId!=-1) // for reviews and videos
+                builtUri =Uri.parse(MOVIES_BASE_URL).buildUpon()
+                            .appendPath(String.valueOf(movieId))
+                            .appendPath(option)
+                            .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+                            .build();
+            else
+                builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
+                            .appendPath(option)
+                            .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+//                          .appendQueryParameter(LANGUAGE_PARAM, LANGUAGE_VALUE)
+                            .build();
 
             URL url = new URL(builtUri.toString());
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -82,9 +104,18 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
             while ((line = reader.readLine()) != null) {
                 buffer.append(line + "\n");
             }
-            moviesJsonStr = buffer.toString();
-            Log.v(LOG_TAG, moviesJsonStr);
-            getMoviesDataFromJson(moviesJsonStr, option);
+            jsonStr = buffer.toString();
+            Log.v(LOG_TAG, jsonStr);
+
+            if(option.equals(getContext().getString(R.string.popular_order)) ||
+                    option.equals(getContext().getString(R.string.top_order)))
+                    getMoviesDataFromJson(jsonStr, option);
+            else
+                if (option.equals(getContext().getString(R.string.videos_order)))
+                    getVideosDataFromJson(jsonStr, movieId);
+                else
+                    getReviewsDataFromJson(jsonStr, movieId);
+
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error", e);
         } catch (JSONException e) {
@@ -115,6 +146,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
         final String TMDB_POPULARITY = "popularity";
         final String TMDB_MOVIE_ID = "id";
 
+        
         try {
 
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
@@ -153,6 +185,11 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                 movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, voteAverage);
                 movieValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, popularity);
                 movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movieId);
+
+                // Once we have movieId we use it for getting Videos and Reviews
+                getData(getContext().getString(R.string.videos_order), movieId);
+                getData(getContext().getString(R.string.reviews_order), movieId);
+
                 // new SimpleDateFormat("yyyy-MM-dd").format(new Date()) return today in string format
                 movieValues.put(MovieContract.MovieEntry.COLUMN_DATE, todayString);
 
@@ -179,13 +216,121 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                         "="+MovieContract.MovieEntry.TABLE_NAME+"."+ MovieContract.MovieEntry.COLUMN_MOVIE_ID+"))";
 
                 getContext().getContentResolver().delete(MovieContract.MovieEntry.buildSortOrderMovie(option), selection, new String[]{todayString});
+
+                // If a movie is deleted also should delete their videos and reviews
+//                getContext().getContentResolver().delete(MovieContract.VideosEntry.buildVideoMovieUri(), selection, new String[]{todayString});
+//                getContext().getContentResolver().delete(MovieContract.MovieEntry.buildSortOrderMovie(option), selection, new String[]{todayString});
+
             }
-            Log.d(LOG_TAG, "Sync Complete. " + inserted + " Inserted");
+            Log.d(LOG_TAG, "Sync Complete. " + inserted + " Movies Inserted");
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
 
+    }
+
+    private void getVideosDataFromJson(String videosJsonStr, int movieId) {
+        final String TMDB_LIST = "results";
+        final String TMDB_VIDEO_KEY = "key";
+        final String TMDB_VIDEO_NAME = "name";
+
+        try {
+
+            JSONObject videosJson = new JSONObject(videosJsonStr);
+            JSONArray videoArray = videosJson.getJSONArray(TMDB_LIST);
+            Vector<ContentValues> cvVector = new Vector<ContentValues>(videoArray.length());
+
+            String videoKey;
+            String videoName;
+
+            for (int i = 0; i < videoArray.length(); i++) {
+
+                JSONObject videoItem = videoArray.getJSONObject(i);
+                videoKey = videoItem.getString(TMDB_VIDEO_KEY);
+                videoName = videoItem.getString(TMDB_VIDEO_NAME);
+
+                // Agregar 2 tablas de Videos y Reviews por cada Pelicula
+                ContentValues videoValues = new ContentValues();
+
+                videoValues.put(MovieContract.VideosEntry.COLUMN_MOVIE_KEY, movieId);
+                videoValues.put(MovieContract.VideosEntry.COLUMN_VIDEO_KEY, videoKey);
+                videoValues.put(MovieContract.VideosEntry.COLUMN_VIDEO_NAME, videoName);
+
+                cvVector.add(videoValues);
+
+            }
+
+            int inserted=0;
+            // cvVector.size() returns number of its elements
+            if(cvVector.size()>0){
+                ContentValues[] cvArray=new ContentValues[cvVector.size()];
+                cvVector.toArray(cvArray);
+
+                //String orderSelected=Utility.getMoviesOrder(getContext());
+
+                inserted=getContext().getContentResolver().bulkInsert(MovieContract.VideosEntry.buildVideoMovieUri(movieId),cvArray);
+
+            }
+            Log.d(LOG_TAG, "Sync Complete. " + inserted + " Videos Inserted");
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+    }
+
+    private void getReviewsDataFromJson(String reviewsJsonStr, int movieId) {
+        final String TMDB_LIST = "results";
+        final String TMDB_REVIEW_ID = "id";
+        final String TMDB_AUTHOR = "author";
+        final String TMDB_CONTENT = "content";
+
+        try {
+
+            JSONObject reviewsJson = new JSONObject(reviewsJsonStr);
+            JSONArray reviewArray = reviewsJson.getJSONArray(TMDB_LIST);
+            Vector<ContentValues> cvVector = new Vector<ContentValues>(reviewArray.length());
+
+            String reviewId;
+            String author;
+            String content;
+
+            for (int i = 0; i < reviewArray.length(); i++) {
+
+                JSONObject reviewItem = reviewArray.getJSONObject(i);
+                reviewId = reviewItem.getString(TMDB_REVIEW_ID);
+                author = reviewItem.getString(TMDB_AUTHOR);
+                content = reviewItem.getString(TMDB_CONTENT);
+
+
+                // Agregar 2 tablas de Videos y Reviews por cada Pelicula
+                ContentValues reviewValues = new ContentValues();
+
+                reviewValues.put(MovieContract.ReviewsEntry.COLUMN_MOVIE_KEY, movieId);
+                reviewValues.put(MovieContract.ReviewsEntry.COLUMN_REVIEW_ID, reviewId);
+                reviewValues.put(MovieContract.ReviewsEntry.COLUMN_AUTHOR, author);
+                reviewValues.put(MovieContract.ReviewsEntry.COLUMN_CONTENT, content);
+
+                cvVector.add(reviewValues);
+
+            }
+
+            int inserted=0;
+            // cvVector.size() returns number of its elements
+            if(cvVector.size()>0){
+                ContentValues[] cvArray=new ContentValues[cvVector.size()];
+                cvVector.toArray(cvArray);
+
+                //String orderSelected=Utility.getMoviesOrder(getContext());
+
+                inserted=getContext().getContentResolver().bulkInsert(MovieContract.ReviewsEntry.buildReviewMovieUri(movieId),cvArray);
+
+            }
+            Log.d(LOG_TAG, "Sync Complete. " + inserted + " Reviews Inserted");
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
     public static void syncImmediately(Context context, String tabName) {
