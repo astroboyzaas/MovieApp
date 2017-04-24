@@ -27,4 +27,13 @@ public class Utility {
         // returns only year
         return dateString.substring(0,4);
     }
+
+    public static String getFriendlyDateString(String dateString){
+        // returns dd-MM-yyyy
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(dateString.substring(8)+"-");
+        buffer.append(dateString.substring(5,7)+"-");
+        buffer.append(dateString.substring(0,4));
+        return buffer.toString();
+    }
 }

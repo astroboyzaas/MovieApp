@@ -59,8 +59,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_POPULARITY,
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
-            MovieContract.FavoritesEntry.TABLE_NAME + "." + MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY
-            //DEPENDE DEL URI
+            MovieContract.FavoritesEntry.TABLE_NAME + "." + MovieContract.FavoritesEntry.COLUMN_MOVIE_KEY // reason why we're using 2 tables on query in provider
     };
 
     public static final int COL_ID = 0;

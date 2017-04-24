@@ -54,7 +54,8 @@ public class MovieDbHelper
                 MovieEntry.COLUMN_RELEASE_DATE+" TEXT NOT NULL, "+
                 MovieEntry.COLUMN_POPULARITY+" REAL NOT NULL, "+
                 MovieEntry.COLUMN_MOVIE_ID+" INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE,"+
-                MovieEntry.COLUMN_DATE+" TEXT NOT NULL"+
+                MovieEntry.COLUMN_DATE+" TEXT NOT NULL, "+
+                MovieEntry.COLUMN_BACKDROP_PATH+" TEXT NOT NULL"+
                 " );";
 
         // COLUMN_MOVIE_ID and COLUMN_MOVIE_KEY are the same but both tables ain't linked with fk since it's easier

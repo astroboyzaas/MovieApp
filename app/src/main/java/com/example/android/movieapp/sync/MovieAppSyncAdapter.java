@@ -145,6 +145,8 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
         final String TMDB_RELEASE_DATE = "release_date";
         final String TMDB_POPULARITY = "popularity";
         final String TMDB_MOVIE_ID = "id";
+        final String TMDB_BACKDROP_PATH = "backdrop_path";
+
 
         
         try {
@@ -163,7 +165,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
             double popularity;
             int movieId;
             String todayString=new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-
+            String backdropPath;
 
             for (int i = 0; i < movieArray.length(); i++) {
 
@@ -175,6 +177,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
                 voteAverage = movieItem.getDouble(TMDB_VOTE_AVERAGE);
                 popularity = movieItem.getDouble(TMDB_POPULARITY);
                 movieId = movieItem.getInt(TMDB_MOVIE_ID);
+                backdropPath = movieItem.getString(TMDB_BACKDROP_PATH);
 
                 ContentValues movieValues = new ContentValues();
 
@@ -192,6 +195,7 @@ public class MovieAppSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // new SimpleDateFormat("yyyy-MM-dd").format(new Date()) return today in string format
                 movieValues.put(MovieContract.MovieEntry.COLUMN_DATE, todayString);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, backdropPath);
 
                 cvVector.add(movieValues);
 

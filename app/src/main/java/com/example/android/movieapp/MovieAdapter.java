@@ -109,7 +109,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-//            mItemClickListener.onClick(this, mCursor.getLong(MovieFragment.COL_MOVIE_ID));
+//            mItemClickListener.onClick(this, mCursor.getLong(MovieFragment.COL_ID));
             mItemClickListener.onClick(mCursor.getLong(MovieFragment.COL_MOVIE_ID));
         }
     }

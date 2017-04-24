@@ -12,55 +12,100 @@
         android:background="@android:color/white"
         app:columnCount="2">
 
-        <TextView
-            android:id="@+id/detail_title_textview"
-            android:gravity="center_vertical"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display2"
-            android:textColor="@color/black"
-            app:layout_columnSpan="2"
-            app:layout_rowWeight="1"
-            tools:text="Chappie" />
+        <RelativeLayout app:layout_columnSpan="2">
+        <ImageView
+            android:id="@+id/backdrop_imageview"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:adjustViewBounds="true"
+            android:src="@drawable/abc_ic_search_api_material"
+             />
 
         <ImageView
-            android:id="@+id/detail_thumbnail_imageview"
-            app:layout_columnWeight="1"
-            android:src="@drawable/abc_ic_search_api_material"/>
+            android:id="@+id/play_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/ic_play"
+            />
+        </RelativeLayout>
 
-        <LinearLayout
-            android:orientation="vertical"
-            app:layout_columnWeight="1"
-            app:layout_gravity="fill_vertical"
-            >
+        <TextView
+            android:id="@+id/detail_title_textview"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+            android:textColor="@color/black"
+            app:layout_columnSpan="2"
+            tools:text="Chappie" />
 
-            <TextView
-                android:id="@+id/detail_release_date_textview"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                tools:text="23/10/2016" />
 
-            <TextView
-                android:id="@+id/detail_vote_average_textview"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                tools:text="4.5/10" />
-
-            <TextView
-                android:id="@+id/detail_popularity_textview"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                tools:text="70%" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/detail_release_date_textview"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            tools:text="23/10/2016" />
 
         <TextView
             android:id="@+id/detail_overview_textview"
-            app:layout_columnSpan="2"
-            app:layout_rowWeight="1"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:gravity="fill"
-            app:layout_gravity="fill"
-            tools:text="description"/>
+            app:layout_columnSpan="2"
+            tools:text="description" />
+
+        <TextView
+            android:id="@+id/vote_average_texview"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="4.4"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
+            app:layout_columnSpan="2"
+            app:layout_gravity="center_horizontal" />
+
+        <RatingBar
+            style="?android:attr/ratingBarStyleIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:rating="3.5"
+            android:stepSize="0.5"
+            app:layout_columnSpan="2"
+            app:layout_gravity="center_horizontal" />
+
+        <LinearLayout
+            app:layout_columnSpan="2"
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/popularity_icon"
+                app:layout_columnWeight="1"
+                android:src="@mipmap/ic_eye"
+                />
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/popularity_textview"
+                app:layout_columnWeight="1"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/reviews_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_columnSpan="2" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_review"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_columnSpan="2" />
+
 
     </android.support.v7.widget.GridLayout>
 </ScrollView>

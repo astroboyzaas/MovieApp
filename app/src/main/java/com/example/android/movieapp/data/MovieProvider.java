@@ -201,7 +201,7 @@ public class MovieProvider extends ContentProvider {
                         null,
                         sortOrder);
 
-                Log.d(LOG_TAG,"Nro de Registros: " + retCursor.getCount());
+                Log.d(LOG_TAG,"Nro de Registros Review: " + retCursor.getCount());
                 break;
             }
             default:
