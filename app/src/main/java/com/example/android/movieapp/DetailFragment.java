@@ -1,6 +1,7 @@
 package com.example.android.movieapp;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -20,11 +21,14 @@ import android.widget.TextView;
 
 import com.example.android.movieapp.data.MovieContract;
 import com.example.android.movieapp.data.MovieProvider;
+import com.google.android.youtube.player.YouTubeIntents;
 import com.squareup.picasso.Picasso;
 
 import static android.R.attr.data;
+import static android.R.attr.id;
 import static android.R.attr.path;
 import static android.os.Build.ID;
+import static android.provider.MediaStore.Video.Thumbnails.VIDEO_ID;
 import static com.example.android.movieapp.MovieFragment.COL_MOVIE_ID;
 
 /**
@@ -215,11 +219,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mPlayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String videoPath = getActivity().getString(R.string.base_youtube_url) + videoKey;
                     try {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(videoPath));
+                        Intent intent = null;
+                        if (YouTubeIntents.canResolvePlayVideoIntent(getActivity())){
+                            intent = YouTubeIntents.createPlayVideoIntentWithOptions(getActivity(), videoKey, true, false);
+
+                        }else{
+                            intent = new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse( getActivity().getString(R.string.base_youtube_url) + videoKey));
+                        }
                         startActivity(intent);
+
                     } catch(Exception e)
                     {
                         Log.e(LOG_TAG,e.getMessage());
