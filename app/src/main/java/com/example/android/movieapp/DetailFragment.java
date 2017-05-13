@@ -1,7 +1,9 @@
 package com.example.android.movieapp;
 
+import android.support.v4.app.DialogFragment;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -10,30 +12,21 @@ import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.movieapp.data.MovieContract;
-import com.example.android.movieapp.data.MovieProvider;
 import com.google.android.youtube.player.YouTubeIntents;
 import com.squareup.picasso.Picasso;
 
-import static android.R.attr.data;
-import static android.R.attr.id;
-import static android.R.attr.path;
-import static android.os.Build.ID;
-import static android.provider.MediaStore.Video.Thumbnails.VIDEO_ID;
-import static com.example.android.movieapp.MovieFragment.COL_MOVIE_ID;
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
-/**
- * Created by Manuel on 12/10/2016.
- */
+
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     String LOG_TAG = DetailFragment.class.getSimpleName();
     static final String DETAIL_URI = "URI";
@@ -42,7 +35,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private Uri mVideoUri;
 
     private static final int DETAIL_LOADER = 0;
-    private static final int REVIEWS_LOADER = 1;
     private static final int VIDEO_LOADER = 2;
 
     private static final String[] DETAIL_COLUMNS = {
@@ -79,10 +71,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final int COL_BACKDROP_PATH = 7;
     public static final int COL_MOVIE_ID = 8;
 
-    // REVIEW COLUMNS INDEX
-    public static final int COL_ROW_REVIEW_ID = 0;
-    public static final int COL_REVIEW_AUTHOR = 1;
-    public static final int COL_REVIEW_CONTENT = 2;
 
     // VIDEO COLUMNS INDEX
     public static final int COL_ROW_VIDEO_ID = 0;
@@ -92,17 +80,19 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mReleaseDate;
     private TextView mOverview;
     private TextView mPopularity;
-    private TextView mReviews;
     private ImageView mBackDrop;
-    private RecyclerView mRecyclerView;
     private ImageView mPlayButton;
+    private Button mReviewsButton;
 
-    private ReviewAdapter mReviewAdapter;
+    private int mContainer;
+    private DetailFragment df;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        mContainer = container.getId();
+        df = this;
         Bundle arguments = getArguments();
         if (arguments != null) {
             mDetailUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
@@ -115,15 +105,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mReleaseDate = (TextView) rootView.findViewById(R.id.detail_release_date_textview);
         mOverview = (TextView) rootView.findViewById(R.id.detail_overview_textview);
         mPopularity = (TextView) rootView.findViewById(R.id.popularity_textview);
-        mReviews = (TextView) rootView.findViewById(R.id.reviews_textview);
         mPlayButton = (ImageView) rootView.findViewById(R.id.play_imageview);
-
-
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_review);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mReviewAdapter = new ReviewAdapter();
-        mRecyclerView.setAdapter(mReviewAdapter);
+        mReviewsButton = (Button) rootView.findViewById(R.id.reviews_button);
 
         return rootView;
     }
@@ -142,17 +125,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                         getActivity(),
                         mDetailUri,
                         DETAIL_COLUMNS,
-                        null,
-                        null,
-                        null
-                );
-            }
-        } else if (id == REVIEWS_LOADER) {
-            if (null != mReviewsUri) {
-                return new CursorLoader(
-                        getActivity(),
-                        mReviewsUri,
-                        REVIEW_COLUMNS,
                         null,
                         null,
                         null
@@ -186,7 +158,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
                 mTitleView.setText(data.getString(COL_ORIGINAL_TITLE));
 
-//                mReleaseDate.setText(data.getString(COL_RELEASE_DATE));
                 mReleaseDate.setText(Utility.getFriendlyDateString(data.getString(COL_RELEASE_DATE)));
 
 //                double voteAverage = data.getDouble(COL_VOTE_AVERAGE);
@@ -198,21 +169,27 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 String popularityStr = String.format("%.2f", popularity);
                 mPopularity.setText("Views: " + popularityStr);
 
-                int idMovie = data.getInt(COL_MOVIE_ID);
+                final int idMovie = data.getInt(COL_MOVIE_ID);
 
                 // loading video
                 mVideoUri = MovieContract.VideosEntry.buildVideoMovieUri(idMovie);
                 getLoaderManager().initLoader(VIDEO_LOADER, null, this);
 
 
+                mReviewsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Bundle arguments = new Bundle();
+                        mReviewsUri = MovieContract.ReviewsEntry.buildReviewMovieUri(idMovie);
+                        arguments.putParcelable(ReviewsDialogFragment.REVIEWS_URI,mReviewsUri);
+                        ReviewsDialogFragment reviewsDialogFragment = new ReviewsDialogFragment();
+                        reviewsDialogFragment.setArguments(arguments);
 
-                // loading reviews
-                mReviewsUri = MovieContract.ReviewsEntry.buildReviewMovieUri(idMovie);
-                getLoaderManager().initLoader(REVIEWS_LOADER, null, this);
+                        reviewsDialogFragment.show(getFragmentManager(),"dialog");
+                    }
+                });
+
             }
-        } else if (loaderId == REVIEWS_LOADER) {
-            mReviews.setText("Reviews: " + data.getCount());
-            mReviewAdapter.swapCursor(data);
         } else if (loaderId == VIDEO_LOADER) {
             if (data != null && data.moveToFirst()) {
             final String videoKey = data.getString(COL_VIDEO_KEY);

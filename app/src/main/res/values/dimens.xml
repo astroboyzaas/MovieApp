@@ -5,4 +5,8 @@
     <dimen name="detail_vertical_margin">24dp</dimen>
 
     <dimen name="item_movie_border_padding">2dp</dimen>
+
+    <dimen name="reviews_horizontal_margin">24dp</dimen>
+    <dimen name="reviews_vertical_margin">8dp</dimen>
+
 </resources>

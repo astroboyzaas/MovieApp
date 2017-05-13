@@ -8,9 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-/**
- * Created by Manuel on 08/04/2017.
- */
+
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdapterViewHolder>{
 
@@ -30,8 +28,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
     @Override
     public void onBindViewHolder(ReviewAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-        holder.mAuthorTextView.setText(mCursor.getString(DetailFragment.COL_REVIEW_AUTHOR));
-        holder.mContentTextView.setText(mCursor.getString(DetailFragment.COL_REVIEW_CONTENT));
+        holder.mAuthorTextView.setText(mCursor.getString(ReviewsDialogFragment.COL_REVIEW_AUTHOR));
+        holder.mContentTextView.setText(mCursor.getString(ReviewsDialogFragment.COL_REVIEW_CONTENT));
     }
 
     // called from DetailFragment

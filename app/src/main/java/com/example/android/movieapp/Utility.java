@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-/**
- * Created by Manuel on 17/10/2016.
- */
 public class Utility {
     public static void setMoviesOrder(Context context, String orderValue){
         String orderSelected=context.getString(R.string.pref_order_selected);
