@@ -20,4 +20,9 @@
     <style name="CustomDialog" parent="@android:style/Theme.Holo.Light" >
         <item name="android:windowIsFloating">true</item>
     </style>
+
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/red</item>
+    </style>
+
 </resources>

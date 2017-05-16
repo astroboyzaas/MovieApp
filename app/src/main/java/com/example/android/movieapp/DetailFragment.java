@@ -1,9 +1,6 @@
 package com.example.android.movieapp;
 
-import android.support.v4.app.DialogFragment;
 import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,13 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.android.movieapp.data.MovieContract;
 import com.google.android.youtube.player.YouTubeIntents;
 import com.squareup.picasso.Picasso;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -79,6 +75,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mTitleView;
     private TextView mReleaseDate;
     private TextView mOverview;
+    private TextView mVoteAverage;
+    private RatingBar mRatingBar;
     private TextView mPopularity;
     private ImageView mBackDrop;
     private ImageView mPlayButton;
@@ -105,6 +103,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mReleaseDate = (TextView) rootView.findViewById(R.id.detail_release_date_textview);
         mOverview = (TextView) rootView.findViewById(R.id.detail_overview_textview);
         mPopularity = (TextView) rootView.findViewById(R.id.popularity_textview);
+        mVoteAverage = (TextView) rootView.findViewById(R.id.vote_average_texview);
+        mRatingBar = (RatingBar) rootView.findViewById(R.id.movie_ratingbar);
         mPlayButton = (ImageView) rootView.findViewById(R.id.play_imageview);
         mReviewsButton = (Button) rootView.findViewById(R.id.reviews_button);
 
@@ -160,13 +160,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
                 mReleaseDate.setText(Utility.getFriendlyDateString(data.getString(COL_RELEASE_DATE)));
 
-//                double voteAverage = data.getDouble(COL_VOTE_AVERAGE);
-//                mVoteAverage.setText(String.format("%2f", voteAverage));
+                double voteAverage = data.getDouble(COL_VOTE_AVERAGE);
+                String voteAverageStr = String.format("%.1f", voteAverage);
+                mVoteAverage.setText(voteAverageStr + "/10");
+                float rating = ((float)(voteAverage*0.5));
+                mRatingBar.setRating(rating);
 
                 mOverview.setText(data.getString(COL_OVERVIEW));
 
                 double popularity = data.getDouble(COL_POPULARITY);
-                String popularityStr = String.format("%.2f", popularity);
+                String popularityStr = String.format("%.1f", popularity);
                 mPopularity.setText("Views: " + popularityStr);
 
                 final int idMovie = data.getInt(COL_MOVIE_ID);
