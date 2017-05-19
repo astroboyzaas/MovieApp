@@ -78,19 +78,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mVoteAverage;
     private RatingBar mRatingBar;
     private TextView mPopularity;
-    private ImageView mBackDrop;
+    private ImageView mImgToolbar;
     private ImageView mPlayButton;
     private Button mReviewsButton;
 
-    private int mContainer;
-    private DetailFragment df;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        mContainer = container.getId();
-        df = this;
         Bundle arguments = getArguments();
         if (arguments != null) {
             mDetailUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
@@ -98,14 +94,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mBackDrop = (ImageView) rootView.findViewById(R.id.backdrop_imageview);
+        mImgToolbar= (ImageView) container.findViewById(R.id.imgToolbar);
+        mPlayButton= (ImageView) container.findViewById(R.id.play_imageview);
+
+
         mTitleView = (TextView) rootView.findViewById(R.id.detail_title_textview);
         mReleaseDate = (TextView) rootView.findViewById(R.id.detail_release_date_textview);
         mOverview = (TextView) rootView.findViewById(R.id.detail_overview_textview);
         mPopularity = (TextView) rootView.findViewById(R.id.popularity_textview);
         mVoteAverage = (TextView) rootView.findViewById(R.id.vote_average_texview);
         mRatingBar = (RatingBar) rootView.findViewById(R.id.movie_ratingbar);
-        mPlayButton = (ImageView) rootView.findViewById(R.id.play_imageview);
         mReviewsButton = (Button) rootView.findViewById(R.id.reviews_button);
 
         return rootView;
@@ -113,6 +111,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -152,9 +151,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             if (data != null && data.moveToFirst()) {
 
                 String backdropPathUrl = getString(R.string.base_url_backdrop) + data.getString(COL_BACKDROP_PATH);
+
                 Picasso.with(getActivity())
                         .load(backdropPathUrl)
-                        .into(mBackDrop);
+                        .into(mImgToolbar);
+
 
                 mTitleView.setText(data.getString(COL_ORIGINAL_TITLE));
 

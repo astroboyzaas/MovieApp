@@ -1,35 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
         app:columnCount="2">
 
-        <RelativeLayout app:layout_columnSpan="2">
-        <ImageView
-            android:id="@+id/backdrop_imageview"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:adjustViewBounds="true"
-            android:src="@drawable/abc_ic_search_api_material"
-             />
-
-        <ImageView
-            android:id="@+id/play_imageview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@mipmap/ic_play"
-
-            />
-        </RelativeLayout>
 
         <TextView
             android:id="@+id/detail_title_textview"
@@ -66,44 +50,44 @@
 
         <RatingBar
             android:id="@+id/movie_ratingbar"
-            android:theme="@style/RatingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:isIndicator="true"
             android:numStars="5"
             android:rating="3.5"
             android:stepSize="0.5"
+            android:theme="@style/RatingBar"
             app:layout_columnSpan="2"
             app:layout_gravity="center_horizontal" />
 
         <LinearLayout
-            app:layout_columnSpan="2"
             android:layout_width="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_columnSpan="2">
+
             <ImageView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
                 android:id="@+id/popularity_icon"
-                app:layout_columnWeight="1"
-                android:src="@mipmap/ic_eye"
-                />
-            <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_eye"
+                app:layout_columnWeight="1" />
+
+            <TextView
                 android:id="@+id/popularity_textview"
-                app:layout_columnWeight="1"
-                />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1" />
         </LinearLayout>
-        
+
         <Button
             android:id="@+id/reviews_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/primary"
-            android:text="@string/reviews_order"/>
-
+            android:text="@string/reviews_order" />
 
     </android.support.v7.widget.GridLayout>
 
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>
+

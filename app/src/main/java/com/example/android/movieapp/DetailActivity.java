@@ -1,13 +1,20 @@
 package com.example.android.movieapp;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+
+import static com.example.android.movieapp.R.id.btnFab;
+
 
 public class DetailActivity extends AppCompatActivity{
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +27,7 @@ public class DetailActivity extends AppCompatActivity{
         ActionBar ab = getSupportActionBar();
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle("");
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
@@ -31,6 +39,15 @@ public class DetailActivity extends AppCompatActivity{
                     .add(R.id.movie_detail_container, fragment)
                     .commit();
         }
+
+        //Floating Action Button
+        FloatingActionButton btnFab = (FloatingActionButton)findViewById(R.id.btnFab);
+        btnFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Esto es una prueba", Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
 }
