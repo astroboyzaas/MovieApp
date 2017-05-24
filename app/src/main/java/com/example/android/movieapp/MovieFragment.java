@@ -93,10 +93,11 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         // create and set the adapter
         mMovieAdapter = new MovieAdapter(getActivity(), this, new MovieAdapter.OnItemClickListener() {
             @Override
-            public void onClick(long idMovie) {
+            public void onClick(long idMovie, boolean isFavorite) {
 //            public void onClick(RecyclerView.ViewHolder holder, long idMovie) {
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .setData(MovieContract.MovieEntry.buildMovieUri(idMovie));
+                        .setData(MovieContract.MovieEntry.buildMovieUri(idMovie))
+                        .putExtra(DetailFragment.FAVORITE, isFavorite);
                 startActivity(intent);
             }
         });

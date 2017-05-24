@@ -14,6 +14,7 @@ import static com.example.android.movieapp.R.id.btnFab;
 
 public class DetailActivity extends AppCompatActivity{
 
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,22 +33,16 @@ public class DetailActivity extends AppCompatActivity{
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+            boolean isFavorite = getIntent().getExtras().getBoolean(DetailFragment.FAVORITE);
+            arguments.putBoolean(DetailFragment.FAVORITE, isFavorite);
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.movie_detail_container, fragment)
+                    .add(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
         }
 
-        //Floating Action Button
-        FloatingActionButton btnFab = (FloatingActionButton)findViewById(R.id.btnFab);
-        btnFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Esto es una prueba", Snackbar.LENGTH_LONG).show();
-            }
-        });
     }
 
 }

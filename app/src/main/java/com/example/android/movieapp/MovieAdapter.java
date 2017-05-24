@@ -42,8 +42,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     /////////////////////////////////////////////CALLBACK OnItemClickListener /////////////
     public interface OnItemClickListener {
-//        void onClick(RecyclerView.ViewHolder holder, long idMovie);
-        void onClick(long idMovie);
+        //        void onClick(RecyclerView.ViewHolder holder, long idMovie);
+        void onClick(long idMovie, boolean isFavorite);
     }
     /////////////////////////////////////////////CALLBACK OnItemClickListener/////////////
 
@@ -107,7 +107,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
 //            mItemClickListener.onClick(this, mCursor.getLong(MovieFragment.COL_ID));
-            mItemClickListener.onClick(mCursor.getLong(MovieFragment.COL_MOVIE_ID));
+
+            boolean isFavorite;
+            if (mCursor.isNull(MovieFragment.COL_MOVIE_KEY))
+                isFavorite = false;
+            else isFavorite = true;
+
+            mItemClickListener.onClick(mCursor.getLong(MovieFragment.COL_MOVIE_ID), isFavorite);
         }
     }
     /////////////////////////////////////  VIEWHOLDER CLASS

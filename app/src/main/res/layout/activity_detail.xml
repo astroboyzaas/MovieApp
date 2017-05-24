@@ -56,7 +56,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@mipmap/ic_play"
         app:borderWidth="0dp"
         app:layout_anchor="@id/appbarLayout"
         app:layout_anchorGravity="bottom|right|end" />

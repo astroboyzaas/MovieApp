@@ -80,12 +80,12 @@
                 app:layout_columnWeight="1" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/reviews_button"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_review"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/primary"
-            android:text="@string/reviews_order" />
+            app:layout_columnSpan="2"
+            />
 
     </android.support.v7.widget.GridLayout>
 
